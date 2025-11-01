@@ -2,14 +2,14 @@
 session_start();
 include_once '../../app/conexao.php';
 
-if (!isset($_SESSION['usuario_id'])) {
+if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(['codigo' => false, 'msg' => 'Usuário não logado.']);
     exit;
 }
 
-$id_usuario = $_SESSION['usuario_id'];
-$sql = "SELECT id_projeto, nm_projeto, desc_projeto, data_criacao FROM projeto WHERE id_usuario = ? ORDER BY data_criacao DESC";
+$id_usuario = $_SESSION['user_id'];
+$sql = "SELECT project_id, project_name, project_description, created_at FROM projects WHERE created_by = ? ORDER BY created_at DESC";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id_usuario);
 $stmt->execute();

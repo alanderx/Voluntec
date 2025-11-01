@@ -17,7 +17,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 $sql = "SELECT s.id_skill, s.name_skill, s.skill_type 
-        FROM skill s 
+        FROM skills s 
         INNER JOIN user_skill us ON s.id_skill = us.id_skill 
         WHERE us.id_user = ?";
 

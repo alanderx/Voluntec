@@ -43,7 +43,7 @@ if (!$target_user_id) {
  * 
  * SELECT s.id_skill, s.name_skill, s.skill_type - Get skill details
  * 
- * FROM skill s - Main skills table
+ * FROM skills s - Main skills table
  * INNER JOIN user_skill us - Join with the user_skill mapping table
  *   ON s.id_skill = us.id_skill - Match skills
  * 
@@ -55,7 +55,7 @@ if (!$target_user_id) {
  * This returns all skills that the specified user has, grouped by type.
  */
 $sql = "SELECT s.id_skill, s.name_skill, s.skill_type 
-        FROM skill s 
+        FROM skills s 
         INNER JOIN user_skill us ON s.id_skill = us.id_skill 
         WHERE us.id_user = ?
         ORDER BY s.skill_type DESC, s.name_skill ASC";

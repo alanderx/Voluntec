@@ -2,21 +2,23 @@
 session_start();
 include_once '../../app/conexao.php';
 
-if (!isset($_SESSION['usuario_id'])) {
+if (!isset($_SESSION['user_id'])) { // antes: usuario_id
     http_response_code(401);
     echo json_encode(['codigo' => false, 'msg' => 'Usuário não logado.']);
     exit;
 }
 
-$id_usuario = $_SESSION['usuario_id'];
-$id_projeto = $_POST['id_projeto'] ?? null;
+$id_usuario = $_SESSION['user_id']; // antes: usuario_id
+$id_projeto = $_POST['project_id'] ?? null; // antes: id_projeto
 if (!$id_projeto) {
     http_response_code(400);
     echo json_encode(['codigo' => false, 'msg' => 'ID do projeto não informado.']);
     exit;
 }
 
-$sql = "DELETE FROM projeto WHERE id_projeto = ? AND id_usuario = ?";
+$sql = "DELETE FROM projects WHERE project_id = ? AND created_by = ?"; 
+// antes: projeto WHERE id_projeto = ? AND id_usuario = ?
+
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ii", $id_projeto, $id_usuario);
 if ($stmt->execute()) {
@@ -26,3 +28,4 @@ if ($stmt->execute()) {
 }
 $stmt->close();
 $conn->close();
+?>

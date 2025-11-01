@@ -2,13 +2,13 @@
 session_start();
 include_once '../../app/conexao.php';
 
-if (!isset($_SESSION['usuario_id'])) {
+if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(['codigo' => false, 'msg' => 'Usuário não logado.']);
     exit;
 }
 
-$id_usuario = $_SESSION['usuario_id'];
+$id_usuario = $_SESSION['user_id'];
 $id_projeto = $_GET['id_projeto'] ?? null;
 if (!$id_projeto) {
     http_response_code(400);
@@ -16,10 +16,10 @@ if (!$id_projeto) {
     exit;
 }
 
-$sql = "SELECT au.id_atv_usuario, au.id_atv, au.id_usuario, au.id_projeto, au.data_comeco, au.data_termino, au.estado, a.nm_atividade
+$sql = "SELECT au.id_atv_usuario, au.id_atv, au.user_id, au.project_id, au.data_comeco, au.data_termino, au.estado, a.nm_atividade
         FROM atividade_usuario au
         JOIN atividade a ON au.id_atv = a.idAtividade
-        WHERE au.id_usuario = ? AND au.id_projeto = ?";
+        WHERE au.user_id = ? AND au.project_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ii", $id_usuario, $id_projeto);
 $stmt->execute();

@@ -2,15 +2,15 @@
 session_start();
 include_once '../../app/conexao.php';
 
-if (!isset($_SESSION['usuario_id'])) {
+if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(['codigo' => false, 'msg' => 'Usuário não logado.']);
     exit;
 }
 
 
-$id_usuario = $_SESSION['usuario_id'];
-$id_projeto = $_POST['id_projeto'] ?? null;
+$id_usuario = $_SESSION['user_id'];
+$id_projeto = $_POST['project_id'] ?? null;
 $id_atv = $_POST['id_atv'] ?? null;
 $data_comeco = $_POST['data_comeco'] ?? null;
 $data_termino = $_POST['data_termino'] ?? null;
@@ -22,7 +22,7 @@ if (!$id_projeto || !$id_atv || !$data_comeco || !$data_termino) {
     exit;
 }
 
-$sql = "INSERT INTO atividade_usuario (id_atv, id_usuario, id_projeto, data_comeco, data_termino, estado) VALUES (?, ?, ?, ?, ?, ?)";
+$sql = "INSERT INTO atividade_usuario (id_atv, user_id, project_id, data_comeco, data_termino, estado) VALUES (?, ?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("iiisss", $id_atv, $id_usuario, $id_projeto, $data_comeco, $data_termino, $estado);
 if ($stmt->execute()) {
