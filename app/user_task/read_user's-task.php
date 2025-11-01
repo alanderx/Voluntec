@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once '../../app/conexao.php';
+include_once '../../app/connection.php';
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
@@ -8,19 +8,19 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$id_atv_usuario = isset($_GET['id_atv_usuario']) ? (int)$_GET['id_atv_usuario'] : null;
-if (!$id_atv_usuario) {
+$id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+if (!$id) {
     http_response_code(400);
     echo json_encode(['codigo' => false, 'msg' => 'ID da associação não informado.']);
     exit;
 }
 
-$sql = "SELECT au.id_atv_usuario, au.id_atv, au.user_id, au.project_id, au.data_comeco, au.data_termino, au.estado, a.nm_atividade
-        FROM atividade_usuario au
-        JOIN atividade a ON au.id_atv = a.idAtividade
-        WHERE au.id_atv_usuario = ?";
+$sql = "SELECT tu.id, tu.task_id, tu.user_id, tu.project_id, tu.start_date, tu.end_date, tu.status, t.title
+        FROM task_user tu
+        JOIN task t ON tu.task_id = t.id
+        WHERE tu.id = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id_atv_usuario);
+$stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
 $atividade = $result->fetch_assoc();

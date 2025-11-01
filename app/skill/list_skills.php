@@ -4,13 +4,13 @@ include_once '../connection.php';
 
 header("Content-Type: application/json; charset=utf-8");
 
-$skill_type = isset($_GET['skill_type']) ? $_GET['skill_type'] : null;
+$type = isset($_GET['type']) ? $_GET['type'] : null;
 
-if ($skill_type) {
-    $stmt = $conn->prepare("SELECT id_skill, name_skill, skill_type FROM skills WHERE skill_type = ?");
-    $stmt->bind_param("s", $skill_type);
+if ($type) {
+    $stmt = $conn->prepare("SELECT id, name, type FROM skill WHERE type = ?");
+    $stmt->bind_param("s", $type);
 } else {
-    $stmt = $conn->prepare("SELECT id_skill, name_skill, skill_type FROM skills");
+    $stmt = $conn->prepare("SELECT id, name, type FROM skill");
 }
 
 $stmt->execute();

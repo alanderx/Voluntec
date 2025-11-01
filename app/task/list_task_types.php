@@ -1,6 +1,6 @@
 <?php
-include_once '../../app/conexao.php';
-$sql = "SELECT idAtividade, nm_atividade FROM Atividade ORDER BY nm_atividade";
+include_once '../../app/connection.php';
+$sql = "SELECT id, title FROM task ORDER BY title";
 $result = $conn->query($sql);
 $atividades = [];
 while ($row = $result->fetch_assoc()) {

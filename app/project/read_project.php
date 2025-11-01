@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once '../../app/conexao.php';
+include_once '../../app/connection.php';
 
 // Permite visualização pública de projetos por id
 $id_projeto = $_GET['id'] ?? null;
@@ -10,7 +10,7 @@ if (!$id_projeto) {
     exit;
 }
 
-$sql = "SELECT p.project_id, p.project_name, p.project_description, p.created_at, u.full_name, p.created_by FROM projects p LEFT JOIN users u ON p.created_by = u.user_id WHERE p.project_id = ?";
+$sql = "SELECT p.id, p.name, p.description, p.created_at, u.name as full_name, p.created_by FROM project p LEFT JOIN user u ON p.created_by = u.id WHERE p.id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id_projeto);
 $stmt->execute();

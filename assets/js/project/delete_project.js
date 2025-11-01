@@ -2,8 +2,8 @@ document.getElementById("btnExcluirProjeto").addEventListener("click", async () 
   const id = new URLSearchParams(window.location.search).get('id');
   if (!confirm('Tem certeza que deseja excluir este projeto?')) return;
   const fd = new FormData();
-  fd.append('id_projeto', id);
-  const resp = await fetch('../app/projeto/apaga_projeto.php', {
+  fd.append('id', id);
+  const resp = await fetch('../../app/project/delete_project.php', {
     method: 'POST',
     body: fd
   });
@@ -17,5 +17,4 @@ document.getElementById("btnExcluirProjeto").addEventListener("click", async () 
   }
   document.getElementById("alerta").innerHTML = msg;
 });
-
 

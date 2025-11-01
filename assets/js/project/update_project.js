@@ -1,9 +1,11 @@
 document.getElementById("btnSalvarProjeto").addEventListener("click", async () => {
+  const id = new URLSearchParams(window.location.search).get('id');
   const fd = new FormData();
-  fd.append("nm_projeto", document.getElementById("nm_projeto").value);
-  fd.append("desc_projeto", document.getElementById("desc_projeto").value);
+  fd.append("id", id);
+  fd.append("name", document.getElementById("name").value);
+  fd.append("description", document.getElementById("description").value);
 
-  const resp = await fetch('../app/projeto/novo_projeto.php', {
+  const resp = await fetch('../../app/project/update_project.php', {
     method: 'POST',
     body: fd
   });
@@ -13,10 +15,9 @@ document.getElementById("btnSalvarProjeto").addEventListener("click", async () =
   let msg = "";
   if (dados.codigo) {
     msg = `<div class='alert alert-success'>${dados.msg}</div>`;
-    setTimeout(() => { window.location.href = 'meus_projetos.html'; }, 1200);
-
   } else {
     msg = `<div class='alert alert-danger'>${dados.msg}</div>`;
   }
   document.getElementById("alerta").innerHTML = msg;
 });
+

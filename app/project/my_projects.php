@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once '../../app/conexao.php';
+include_once '../../app/connection.php';
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $id_usuario = $_SESSION['user_id'];
-$sql = "SELECT project_id, project_name, project_description, created_at FROM projects WHERE created_by = ? ORDER BY created_at DESC";
+$sql = "SELECT id, name, description, created_at FROM project WHERE created_by = ? ORDER BY created_at DESC";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id_usuario);
 $stmt->execute();

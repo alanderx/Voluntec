@@ -13,13 +13,13 @@ if (!isset($_SESSION['user_id'])) {
 
 $id = $_SESSION['user_id'];
 
-$nome = $_POST['name_user'];
-$email = $_POST['email_user'];
+$nome = $_POST['name'];
+$email = $_POST['email'];
 $cidade = $_POST['city'];
-$uf = $_POST['uf'];
+$uf = $_POST['state'];
 $pais = $_POST['country'];
 
-$sql = "UPDATE user SET name_user = ?, email_user = ?, city = ?, uf = ?, country = ? WHERE id_user = ?";
+$sql = "UPDATE user SET name = ?, email = ?, city = ?, state = ?, country = ? WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("sssssi", $nome, $email, $cidade, $uf, $pais, $id);
 

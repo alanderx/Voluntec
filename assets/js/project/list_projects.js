@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const carouselInner = document.getElementById("carouselProjetosInner");
   try {
-    const resp = await fetch("app/projeto/listar_projetos.php");
+    const resp = await fetch("app/project/list_projects.php");
     const projetos = await resp.json();
     if (projetos.length === 0) {
       carouselInner.innerHTML = '<div class="alert alert-info">Nenhum projeto encontrado.</div>';
@@ -21,15 +21,15 @@ document.addEventListener("DOMContentLoaded", async () => {
           <div class="col">
             <div class="card h-100 shadow-sm">
               <div class="card-body">
-                <h5 class="card-title">${p.nm_projeto}</h5>
-                <p class="card-text">${p.desc_projeto}</p>
-                <p class="card-text"><small class="text-muted">Criado por: ${p.nome_usuario}</small></p>
+                <h5 class="card-title">${p.name}</h5>
+                <p class="card-text">${p.description}</p>
+                <p class="card-text"><small class="text-muted">Criado por: ${p.full_name}</small></p>
                 <div class="d-flex gap-2 mt-3">
-                  <button class="btn btn-primary btn-sm" onclick="window.location.href='registro/ver_projeto.html?id=${p.id_projeto}'">Saiba mais</button>
+                  <button class="btn btn-primary btn-sm" onclick="window.location.href='view_project.html?id=${p.id}'">Saiba mais</button>
                 </div>
               </div>
               <div class="card-footer text-muted small">
-                Criado em: ${new Date(p.data_criacao).toLocaleDateString()}
+                Criado em: ${new Date(p.created_at).toLocaleDateString()}
               </div>
             </div>
           </div>

@@ -1,128 +1,167 @@
-CREATE DATABASE Voluntec;
+CREATE DATABASE IF NOT EXISTS Voluntec;
 USE Voluntec;
 
--- Tabela de usuários
-CREATE TABLE user (
-  id_user INT NOT NULL AUTO_INCREMENT,
-  name_user VARCHAR(100) NOT NULL,
-  email_user VARCHAR(100) NOT NULL,
-  password_user VARCHAR(100) NOT NULL,
+-- =====================
+-- USER
+-- =====================
+CREATE TABLE IF NOT EXISTS user (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password_hash VARCHAR(100) NOT NULL,
   birth_date DATE NOT NULL,
   city VARCHAR(50) NOT NULL,
-  uf VARCHAR(100) NOT NULL,
+  state VARCHAR(100) NOT NULL,
   country VARCHAR(100) NOT NULL,
-  is_moderator TINYINT NOT NULL,  -- Indica se o usuário é moderador (1 = sim, 0 = não)
-  PRIMARY KEY (id_user)
+  is_moderator BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (id)
 );
 
--- Tabela de habilidades
-CREATE TABLE skill (
-  id_skill INT NOT NULL AUTO_INCREMENT,
-  name_skill VARCHAR(50) NOT NULL,
-  skill_type ENUM('soft', 'hard') NOT NULL,
-  PRIMARY KEY (id_skill)
+-- =====================
+-- SKILL
+-- =====================
+CREATE TABLE IF NOT EXISTS skill (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL,
+  type ENUM('soft', 'hard') NOT NULL,
+  PRIMARY KEY (id)
 );
 
--- Tabela de relação usuário-habilidade
-CREATE TABLE user_skill (
-  id_user_skill INT NOT NULL AUTO_INCREMENT,
-  id_user INT NOT NULL,
-  id_skill INT NOT NULL,
-  PRIMARY KEY (id_user_skill),
-  FOREIGN KEY (id_user) REFERENCES user(id_user),  -- Corrigido nome da tabela
-  FOREIGN KEY (id_skill) REFERENCES skill(id_skill)  -- Corrigido nome da tabela
+-- =====================
+-- USER_SKILL (junction table)
+-- =====================
+CREATE TABLE IF NOT EXISTS user_skill (
+  id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  skill_id INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+  FOREIGN KEY (skill_id) REFERENCES skill(id) ON DELETE CASCADE
 );
 
--- Tabela de tarefas
-CREATE TABLE task (
-  id_task INT NOT NULL AUTO_INCREMENT,
-  title_task VARCHAR(45) NOT NULL,
-  PRIMARY KEY (id_task)
+-- =====================
+-- TASK
+-- =====================
+CREATE TABLE IF NOT EXISTS task (
+  id INT NOT NULL AUTO_INCREMENT,
+  title VARCHAR(100) NOT NULL,
+  description TEXT NULL,
+  PRIMARY KEY (id)
 );
 
--- Tabela de relação tarefa-habilidade
-CREATE TABLE task_skill (
-  id_task_skill INT NOT NULL AUTO_INCREMENT,
-  id_task INT NOT NULL,
-  id_skill INT NOT NULL,
-  PRIMARY KEY (id_task_skill),
-  FOREIGN KEY (id_task) REFERENCES task(id_task),
-  FOREIGN KEY (id_skill) REFERENCES skill(id_skill)
-);
-
--- Tabela de projetos (ideia -> em_desenvolvimento -> finalizado)
-CREATE TABLE project (
-  id_project INT NOT NULL AUTO_INCREMENT,  -- Corrigido nome da tabela
-  nm_project VARCHAR(45) NOT NULL,  -- Corrigido nome da coluna
-  desc_project LONGTEXT NOT NULL,  -- Corrigido nome da coluna
-  creation_date DATETIME NOT NULL,
-  id_user INT NOT NULL,
-  status ENUM('idea', 'ongoing', 'concluded') DEFAULT 'idea',  -- Corrigido valor padrão para 'idea'
+-- =====================
+-- PROJECT
+-- =====================
+CREATE TABLE IF NOT EXISTS project (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  description LONGTEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_by INT NOT NULL,
+  status ENUM('idea', 'ongoing', 'completed') DEFAULT 'idea',
   start_date DATETIME NULL,
   end_date DATETIME NULL,
-  PRIMARY KEY (id_project),  -- Corrigido nome da tabela
-  FOREIGN KEY (id_user) REFERENCES user(id_user)
+  PRIMARY KEY (id),
+  FOREIGN KEY (created_by) REFERENCES user(id) ON DELETE CASCADE
 );
 
--- Tabela da equipe de voluntários do projeto
-CREATE TABLE project_volunteer (
-  id_project_volunteer INT NOT NULL AUTO_INCREMENT,
-  id_project INT NOT NULL,
-  id_user INT NOT NULL,
-  is_manager TINYINT NOT NULL,  -- 1 para gerente, 0 para membro
-  PRIMARY KEY (id_project_volunteer),
-  FOREIGN KEY (id_project) REFERENCES project(id_project),
-  FOREIGN KEY (id_user) REFERENCES user(id_user)
-);
-
--- Tabela com habilidades requisitadas para o projeto
-CREATE TABLE project_skill (
-  id_project_skill INT NOT NULL AUTO_INCREMENT,
-  id_project INT NOT NULL,
-  id_skill INT NOT NULL,
-  PRIMARY KEY (id_project_skill),
-  FOREIGN KEY (id_project) REFERENCES project(id_project),
-  FOREIGN KEY (id_skill) REFERENCES skill(id_skill)
-);
-
--- Tabela de atribuição de tarefas
-CREATE TABLE task_assignment (
-  id_task_assignment INT NOT NULL AUTO_INCREMENT,
-  id_task INT NOT NULL,
-  id_user INT NOT NULL,
-  id_project INT NOT NULL,
+-- =====================
+-- TASK_USER (formerly atividade_usuario)
+-- =====================
+CREATE TABLE IF NOT EXISTS task_user (
+  id INT NOT NULL AUTO_INCREMENT,
+  task_id INT NOT NULL,
+  user_id INT NOT NULL,
+  project_id INT NOT NULL,
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
-  assignment_status VARCHAR(45) NOT NULL,
-  PRIMARY KEY (id_task_assignment),
-  FOREIGN KEY (id_user) REFERENCES user(id_user),
-  FOREIGN KEY (id_task) REFERENCES task(id_task),
-  FOREIGN KEY (id_project) REFERENCES project(id_project)
+  status VARCHAR(45) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (task_id) REFERENCES task(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+  FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
 );
 
--- Tabela de avaliação de desempenho
-CREATE TABLE performance_assessment (
-  id_assessment INT NOT NULL AUTO_INCREMENT,
-  id_user INT NOT NULL,
-  id_project INT NOT NULL,
-  grade INT NOT NULL,  -- A nota será de 1 a 5
-  comment LONGTEXT NULL,
-  status ENUM('pending', 'evaluated') NOT NULL DEFAULT 'pending',  -- Status da avaliação
-  PRIMARY KEY (id_assessment),
-  FOREIGN KEY (id_user) REFERENCES user(id_user),
-  FOREIGN KEY (id_project) REFERENCES project(id_project),
-  CONSTRAINT grade_check CHECK (grade BETWEEN 1 AND 5)  -- Restrição para a nota de 1 a 5
+-- =====================
+-- TASK_SKILL
+-- =====================
+CREATE TABLE IF NOT EXISTS task_skill (
+  id INT NOT NULL AUTO_INCREMENT,
+  task_id INT NOT NULL,
+  skill_id INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (task_id) REFERENCES task(id) ON DELETE CASCADE,
+  FOREIGN KEY (skill_id) REFERENCES skill(id) ON DELETE CASCADE
 );
 
--- Tabela de solicitação de participação no projeto
-CREATE TABLE project_participation_request (
-  id_project_participation_request INT NOT NULL AUTO_INCREMENT,
-  id_project INT NOT NULL,
-  id_user INT NOT NULL,
-  request_status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',  -- Status em inglês
-  data_request TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Data de solicitação
-  data_response TIMESTAMP NULL,  -- Data de resposta (aprovada ou rejeitada)
-  PRIMARY KEY (id_project_participation_request),
-  FOREIGN KEY (id_project) REFERENCES project(id_project),
-  FOREIGN KEY (id_user) REFERENCES user(id_user)
+-- =====================
+-- PROJECT_VOLUNTEER
+-- =====================
+CREATE TABLE IF NOT EXISTS project_volunteer (
+  id INT NOT NULL AUTO_INCREMENT,
+  project_id INT NOT NULL,
+  user_id INT NOT NULL,
+  is_manager BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (id),
+  FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+);
+
+-- =====================
+-- PROJECT_SKILL
+-- =====================
+CREATE TABLE IF NOT EXISTS project_skill (
+  id INT NOT NULL AUTO_INCREMENT,
+  project_id INT NOT NULL,
+  skill_id INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
+  FOREIGN KEY (skill_id) REFERENCES skill(id) ON DELETE CASCADE
+);
+
+-- =====================
+-- TASK_ASSIGNMENT
+-- =====================
+CREATE TABLE IF NOT EXISTS task_assignment (
+  id INT NOT NULL AUTO_INCREMENT,
+  task_id INT NOT NULL,
+  user_id INT NOT NULL,
+  project_id INT NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  status ENUM('assigned', 'in_progress', 'completed', 'canceled') DEFAULT 'assigned',
+  PRIMARY KEY (id),
+  FOREIGN KEY (task_id) REFERENCES task(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+  FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
+);
+
+-- =====================
+-- PERFORMANCE_ASSESSMENT
+-- =====================
+CREATE TABLE IF NOT EXISTS performance_assessment (
+  id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  project_id INT NOT NULL,
+  rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  feedback LONGTEXT NULL,
+  status ENUM('pending', 'evaluated') NOT NULL DEFAULT 'pending',
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+  FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
+);
+
+-- =====================
+-- PROJECT_PARTICIPATION_REQUEST
+-- =====================
+CREATE TABLE IF NOT EXISTS project_participation_request (
+  id INT NOT NULL AUTO_INCREMENT,
+  project_id INT NOT NULL,
+  user_id INT NOT NULL,
+  status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
+  requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  responded_at TIMESTAMP NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );

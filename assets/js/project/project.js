@@ -37,11 +37,11 @@ document.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     const btnNova = document.getElementById('btnNovaAtividade');
     if (btnNova && id) {
-      btnNova.onclick = () => showFormCriarAtividade(id, () => renderKanbanAtividades(id));
+      btnNova.onclick = () => window.showFormCreateTask && window.showFormCreateTask(id, () => window.renderKanbanTasks && window.renderKanbanTasks(id));
     }
   }, 100);
 
   // Renderizar Kanban ao carregar
-  renderKanbanAtividades(id);
+  window.renderKanbanTasks && window.renderKanbanTasks(id);
 });
 

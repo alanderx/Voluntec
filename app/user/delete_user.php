@@ -10,14 +10,14 @@ if (!isset($_SESSION['user_id'])) {
 $id = $_SESSION['user_id'];
 
 // Delete user's skills first
-$sql_skills = "DELETE FROM user_skill WHERE id_user = ?";
+$sql_skills = "DELETE FROM user_skill WHERE user_id = ?";
 $stmt_skills = $conn->prepare($sql_skills);
 $stmt_skills->bind_param("i", $id);
 $stmt_skills->execute();
 $stmt_skills->close();
 
 // Delete user's projects first
-$sql_projetos = "DELETE FROM project WHERE id_user = ?";
+$sql_projetos = "DELETE FROM project WHERE created_by = ?";
 $stmt_projetos = $conn->prepare($sql_projetos);
 $stmt_projetos->bind_param("i", $id);
 if (!$stmt_projetos->execute()) {
@@ -29,7 +29,7 @@ if (!$stmt_projetos->execute()) {
 $stmt_projetos->close();
 
 // Now delete the user
-$sql_usuario = "DELETE FROM user WHERE id_user = ?";
+$sql_usuario = "DELETE FROM user WHERE id = ?";
 $stmt_usuario = $conn->prepare($sql_usuario);
 $stmt_usuario->bind_param("i", $id);
 if ($stmt_usuario->execute()) {

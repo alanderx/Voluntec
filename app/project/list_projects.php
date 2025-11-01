@@ -1,7 +1,7 @@
 <?php
-include_once '../conexao.php';
+include_once '../connection.php';
 
-$sql = "SELECT p.project_id, p.project_name, p.project_description, p.created_at, u.full_name FROM projects p JOIN users u ON p.created_by = u.user_id ORDER BY p.created_at DESC LIMIT 12";
+$sql = "SELECT p.id, p.name, p.description, p.created_at, u.name as full_name FROM project p JOIN user u ON p.created_by = u.id ORDER BY p.created_at DESC LIMIT 12";
 $result = $conn->query($sql);
 $projetos = [];
 if ($result && $result->num_rows > 0) {

@@ -78,24 +78,24 @@ $placeholders = implode(',', array_fill(0, count($area_ids), '?'));
  * Query Explanation:
  * 
  * SELECT DISTINCT - Get unique skills (a skill might be in multiple areas)
- * s.id_skill, s.name_skill, s.skill_type - Skill details
+ * s.id, s.name, s.type - Skill details
  * 
- * FROM skills s - Main skills table
+ * FROM skill s - Main skills table
  * INNER JOIN interest_area_skill ias - Join with mapping table that links areas to skills
- *   ON s.id_skill = ias.id_skill - Match skills
+ *   ON s.id = ias.skill_id - Match skills
  * 
  * WHERE ias.id_interest_area IN ($placeholders) - Filter by selected interest areas
  * 
- * ORDER BY s.skill_type DESC, s.name_skill ASC - Sort by type (hard first), then alphabetically
+ * ORDER BY s.type DESC, s.name ASC - Sort by type (hard first), then alphabetically
  * 
  * Example result: If user selects "design" (ID: 1), returns skills like:
  * - UI/UX Design, Figma, Photoshop, Adobe Illustrator, etc.
  */
-$sql = "SELECT DISTINCT s.id_skill, s.name_skill, s.skill_type
-        FROM skills s
-        INNER JOIN interest_area_skill ias ON s.id_skill = ias.id_skill
+$sql = "SELECT DISTINCT s.id, s.name, s.type
+        FROM skill s
+        INNER JOIN interest_area_skill ias ON s.id = ias.skill_id
         WHERE ias.id_interest_area IN ($placeholders)
-        ORDER BY s.skill_type DESC, s.name_skill ASC";
+        ORDER BY s.type DESC, s.name ASC";
 
 // Prepare the SQL statement
 $stmt = $conn->prepare($sql);

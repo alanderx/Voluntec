@@ -16,10 +16,10 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-$sql = "SELECT s.id_skill, s.name_skill, s.skill_type 
-        FROM skills s 
-        INNER JOIN user_skill us ON s.id_skill = us.id_skill 
-        WHERE us.id_user = ?";
+$sql = "SELECT s.id, s.name, s.type 
+        FROM skill s 
+        INNER JOIN user_skill us ON s.id = us.skill_id 
+        WHERE us.user_id = ?";
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);

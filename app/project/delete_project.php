@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once '../../app/conexao.php';
+include_once '../../app/connection.php';
 
 if (!isset($_SESSION['user_id'])) { // antes: usuario_id
     http_response_code(401);
@@ -9,14 +9,14 @@ if (!isset($_SESSION['user_id'])) { // antes: usuario_id
 }
 
 $id_usuario = $_SESSION['user_id']; // antes: usuario_id
-$id_projeto = $_POST['project_id'] ?? null; // antes: id_projeto
+$id_projeto = $_POST['id'] ?? null; // antes: id_projeto
 if (!$id_projeto) {
     http_response_code(400);
     echo json_encode(['codigo' => false, 'msg' => 'ID do projeto não informado.']);
     exit;
 }
 
-$sql = "DELETE FROM projects WHERE project_id = ? AND created_by = ?"; 
+$sql = "DELETE FROM project WHERE id = ? AND created_by = ?"; 
 // antes: projeto WHERE id_projeto = ? AND id_usuario = ?
 
 $stmt = $conn->prepare($sql);

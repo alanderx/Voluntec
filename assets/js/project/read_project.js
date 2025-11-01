@@ -6,15 +6,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
   try {
-    const resp = await fetch(`../app/projeto/ler_projeto.php?id=${id}`);
+    const resp = await fetch(`../../app/project/read_project.php?id=${id}`);
     const projeto = await resp.json();
     if (!projeto) {
       alerta.innerHTML = '<div class="alert alert-danger">Projeto não encontrado.</div>';
       return;
     }
-    document.getElementById("nm_projeto").value = projeto.nm_projeto;
-    document.getElementById("desc_projeto").value = projeto.desc_projeto;
+    document.getElementById("name").value = projeto.name;
+    document.getElementById("description").value = projeto.description;
   } catch (e) {
     alerta.innerHTML = '<div class="alert alert-danger">Erro ao carregar projeto.</div>';
   }
 });
+

@@ -1,18 +1,18 @@
 <?php
 session_start();
-include_once '../conexao.php';
+include_once '../connection.php';
 
 $resposta = [];
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id'])) { // antes: usuario_id
     $resposta['codigo'] = false;
     $resposta['msg'] = 'Usuário não logado.';
     echo json_encode($resposta);
     exit;
 }
 
-$nome = $_POST['project_name'] ?? '';
-$descricao = $_POST['project_description'] ?? '';
+$nome = $_POST['name'] ?? '';
+$descricao = $_POST['description'] ?? '';
 
 if (empty($nome) || empty($descricao)) {
     $resposta['codigo'] = false;
@@ -21,10 +21,12 @@ if (empty($nome) || empty($descricao)) {
     exit;
 }
 
-$id_usuario = $_SESSION['user_id'];
+$id_usuario = $_SESSION['user_id']; // antes: usuario_id
 $data_criacao = date("Y-m-d H:i:s");
 
-$sql = "INSERT INTO projects (project_name, project_description, created_at, created_by) VALUES (?, ?, ?, ?)";
+$sql = "INSERT INTO project (name, description, created_at, created_by) VALUES (?, ?, ?, ?)"; 
+// antes: projeto (nm_projeto, desc_projeto, data_criacao, id_usuario)
+
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("sssi", $nome, $descricao, $data_criacao, $id_usuario);
 

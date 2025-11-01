@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once '../../app/conexao.php';
+include_once '../../app/connection.php';
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
@@ -9,22 +9,22 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $id_usuario = $_SESSION['user_id'];
-$id_projeto = $_POST['project_id'] ?? null;
+$id_projeto = $_POST['id'] ?? null;
 if (!$id_projeto) {
     http_response_code(400);
     echo json_encode(['codigo' => false, 'msg' => 'ID do projeto não informado.']);
     exit;
 }
 
-$nome = $_POST['project_name'] ?? '';
-$desc = $_POST['project_description'] ?? '';
+$nome = $_POST['name'] ?? '';
+$desc = $_POST['description'] ?? '';
 
 if (empty($nome) || empty($desc)) {
     echo json_encode(['codigo' => false, 'msg' => 'Preencha todos os campos.']);
     exit;
 }
 
-$sql = "UPDATE projects SET project_name = ?, project_description = ? WHERE project_id = ? AND created_by = ?";
+$sql = "UPDATE project SET name = ?, description = ? WHERE id = ? AND created_by = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ssii", $nome, $desc, $id_projeto, $id_usuario);
 if ($stmt->execute()) {

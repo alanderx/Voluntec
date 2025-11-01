@@ -41,24 +41,24 @@ if (!$target_user_id) {
 /**
  * Query Explanation:
  * 
- * SELECT s.id_skill, s.name_skill, s.skill_type - Get skill details
+ * SELECT s.id, s.name, s.type - Get skill details
  * 
- * FROM skills s - Main skills table
+ * FROM skill s - Main skills table
  * INNER JOIN user_skill us - Join with the user_skill mapping table
- *   ON s.id_skill = us.id_skill - Match skills
+ *   ON s.id = us.skill_id - Match skills
  * 
- * WHERE us.id_user = ? - Filter by the specified user ID
+ * WHERE us.user_id = ? - Filter by the specified user ID
  * 
- * ORDER BY s.skill_type DESC, s.name_skill ASC - Sort by type (hard skills first),
+ * ORDER BY s.type DESC, s.name ASC - Sort by type (hard skills first),
  * then alphabetically by name
  * 
  * This returns all skills that the specified user has, grouped by type.
  */
-$sql = "SELECT s.id_skill, s.name_skill, s.skill_type 
-        FROM skills s 
-        INNER JOIN user_skill us ON s.id_skill = us.id_skill 
-        WHERE us.id_user = ?
-        ORDER BY s.skill_type DESC, s.name_skill ASC";
+$sql = "SELECT s.id, s.name, s.type 
+        FROM skill s 
+        INNER JOIN user_skill us ON s.id = us.skill_id 
+        WHERE us.user_id = ?
+        ORDER BY s.type DESC, s.name ASC";
 
 // Prepare the SQL statement
 $stmt = $conn->prepare($sql);

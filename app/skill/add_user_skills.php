@@ -53,7 +53,7 @@ try {
      * This allows the user to update their skills by replacing the old set with new ones
      * Otherwise, skills would just keep accumulating
      */
-    $stmt_delete = $conn->prepare("DELETE FROM user_skill WHERE id_user = ?");
+    $stmt_delete = $conn->prepare("DELETE FROM user_skill WHERE user_id = ?");
     $stmt_delete->bind_param("i", $user_id);
     $stmt_delete->execute();
     $stmt_delete->close();
@@ -62,7 +62,7 @@ try {
      * Step 2: Insert all new selected skills
      * Loop through the array of skill IDs and insert each one
      */
-    $stmt_insert = $conn->prepare("INSERT INTO user_skill (id_user, id_skill) VALUES (?, ?)");
+    $stmt_insert = $conn->prepare("INSERT INTO user_skill (user_id, skill_id) VALUES (?, ?)");
     
     foreach ($skills as $skill_id) {
         // Bind parameters: i = integer, ii = two integers (user_id, skill_id)

@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("meusProjetos");
   try {
-    const resp = await fetch("../app/projeto/meus_projetos.php");
+    const resp = await fetch("../app/project/my_projects.php");
     if (resp.status === 401) {
       container.innerHTML = '<div class="alert alert-danger">Você precisa estar logado para ver seus projetos.</div>';
       return;
@@ -17,15 +17,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body">
-              <h5 class="card-title">${p.nm_projeto}</h5>
-              <p class="card-text">${p.desc_projeto}</p>
+              <h5 class="card-title">${p.name}</h5>
+              <p class="card-text">${p.description}</p>
               <div class="d-flex gap-2 mt-3">
-                <a href="lerAlteraApaga_projeto.html?id=${p.id_projeto}" class="btn btn-warning btn-sm">Configurar Projeto</a>
-                <a href="projeto.html?id=${p.id_projeto}" class="btn btn-primary btn-sm">Entrar</a>
+                <a href="update-&-delete_project.html?id=${p.id}" class="btn btn-warning btn-sm">Configurar Projeto</a>
+                <a href="project.html?id=${p.id}" class="btn btn-primary btn-sm">Entrar</a>
               </div>
             </div>
             <div class="card-footer text-muted small">
-              Criado em: ${new Date(p.data_criacao).toLocaleDateString()}
+              Criado em: ${new Date(p.created_at).toLocaleDateString()}
             </div>
           </div>
         </div>
