@@ -10,6 +10,10 @@
  * that belong to those interest areas.
  */
 
+// Suppress error display to prevent HTML output
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
 session_start();
 include_once '../connection.php';
 
@@ -100,14 +104,40 @@ $sql = "SELECT DISTINCT s.id, s.name, s.type
 // Prepare the SQL statement
 $stmt = $conn->prepare($sql);
 
+// Check if statement preparation failed
+if (!$stmt) {
+    $resposta['codigo'] = false;
+    $resposta['msg'] = 'Database error: ' . $conn->error;
+    echo json_encode($resposta);
+    $conn->close();
+    exit;
+}
+
 // Bind parameters dynamically (e.g., str_repeat('i', 2) = 'ii' for 2 integer parameters)
 $stmt->bind_param(str_repeat('i', count($area_ids)), ...$area_ids);
 
 // Execute the query
-$stmt->execute();
+if (!$stmt->execute()) {
+    $resposta['codigo'] = false;
+    $resposta['msg'] = 'Query error: ' . $stmt->error;
+    echo json_encode($resposta);
+    $stmt->close();
+    $conn->close();
+    exit;
+}
 
 // Get the result set
 $resultado = $stmt->get_result();
+
+// Check if result set is valid
+if (!$resultado) {
+    $resposta['codigo'] = false;
+    $resposta['msg'] = 'Result error: ' . $stmt->error;
+    echo json_encode($resposta);
+    $stmt->close();
+    $conn->close();
+    exit;
+}
 
 // Loop through results and build the skills array
 $skills = [];

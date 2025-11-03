@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 $id = $_SESSION['user_id'];
 
 // Delete user's skills first
-$sql_skills = "DELETE FROM user_skill WHERE user_id = ?";
+$sql_skills = "DELETE FROM volunteer_skill WHERE volunteer_id = ?";
 $stmt_skills = $conn->prepare($sql_skills);
 $stmt_skills->bind_param("i", $id);
 $stmt_skills->execute();

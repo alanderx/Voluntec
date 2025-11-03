@@ -21,6 +21,15 @@ CREATE TABLE IF NOT EXISTS volunteer (
 );
 
 -- =====================
+-- INTEREST_AREA
+-- =====================
+CREATE TABLE IF NOT EXISTS interest_area (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+-- =====================
 -- SKILL
 -- =====================
 CREATE TABLE IF NOT EXISTS skill (
@@ -28,6 +37,18 @@ CREATE TABLE IF NOT EXISTS skill (
   name VARCHAR(50) NOT NULL,
   type ENUM('soft', 'hard') NOT NULL,
   PRIMARY KEY (id)
+);
+
+-- =====================
+-- INTEREST_AREA_SKILL (junction table)
+-- =====================
+CREATE TABLE IF NOT EXISTS interest_area_skill (
+  id INT NOT NULL AUTO_INCREMENT,
+  id_interest_area INT NOT NULL,
+  skill_id INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (id_interest_area) REFERENCES interest_area(id) ON DELETE CASCADE,
+  FOREIGN KEY (skill_id) REFERENCES skill(id) ON DELETE CASCADE
 );
 
 -- =====================
@@ -168,3 +189,53 @@ CREATE TABLE IF NOT EXISTS project_participation_request (
   FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE,
   FOREIGN KEY (volunteer_id) REFERENCES volunteer(id) ON DELETE CASCADE
 );
+
+-- =====================
+-- SAMPLE DATA
+-- =====================
+
+-- Insert Interest Areas (IDs: 1=Design, 2=Development, 3=Data, 4=Business)
+INSERT INTO interest_area (id, name) VALUES
+(1, 'Design'),
+(2, 'Development'),
+(3, 'Data Intelligence'),
+(4, 'Business Management')
+ON DUPLICATE KEY UPDATE name=VALUES(name);
+
+-- Insert Sample Skills
+INSERT INTO skill (id, name, type) VALUES
+(1, 'UI/UX Design', 'hard'),
+(2, 'Figma', 'hard'),
+(3, 'Photoshop', 'hard'),
+(4, 'JavaScript', 'hard'),
+(5, 'PHP', 'hard'),
+(6, 'Python', 'hard'),
+(7, 'SQL', 'hard'),
+(8, 'Data Analysis', 'hard'),
+(9, 'Machine Learning', 'hard'),
+(10, 'Communication', 'soft'),
+(11, 'Teamwork', 'soft'),
+(12, 'Leadership', 'soft'),
+(13, 'Project Management', 'soft')
+ON DUPLICATE KEY UPDATE name=VALUES(name), type=VALUES(type);
+
+-- Link Skills to Interest Areas
+-- Design (ID: 1) -> Skills: UI/UX, Figma, Photoshop
+INSERT INTO interest_area_skill (id_interest_area, skill_id) VALUES
+(1, 1), (1, 2), (1, 3)
+ON DUPLICATE KEY UPDATE id_interest_area=VALUES(id_interest_area);
+
+-- Development (ID: 2) -> Skills: JavaScript, PHP, Python
+INSERT INTO interest_area_skill (id_interest_area, skill_id) VALUES
+(2, 4), (2, 5), (2, 6)
+ON DUPLICATE KEY UPDATE id_interest_area=VALUES(id_interest_area);
+
+-- Data Intelligence (ID: 3) -> Skills: SQL, Data Analysis, Python, Machine Learning
+INSERT INTO interest_area_skill (id_interest_area, skill_id) VALUES
+(3, 7), (3, 8), (3, 6), (3, 9)
+ON DUPLICATE KEY UPDATE id_interest_area=VALUES(id_interest_area);
+
+-- Business Management (ID: 4) -> Skills: Communication, Teamwork, Leadership, Project Management
+INSERT INTO interest_area_skill (id_interest_area, skill_id) VALUES
+(4, 10), (4, 11), (4, 12), (4, 13)
+ON DUPLICATE KEY UPDATE id_interest_area=VALUES(id_interest_area);

@@ -18,8 +18,8 @@ $user_id = $_SESSION['user_id'];
 
 $sql = "SELECT s.id, s.name, s.type 
         FROM skill s 
-        INNER JOIN user_skill us ON s.id = us.skill_id 
-        WHERE us.user_id = ?";
+        INNER JOIN volunteer_skill vs ON s.id = vs.skill_id 
+        WHERE vs.volunteer_id = ?";
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);

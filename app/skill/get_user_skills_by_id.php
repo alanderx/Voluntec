@@ -56,8 +56,8 @@ if (!$target_user_id) {
  */
 $sql = "SELECT s.id, s.name, s.type 
         FROM skill s 
-        INNER JOIN user_skill us ON s.id = us.skill_id 
-        WHERE us.user_id = ?
+        INNER JOIN volunteer_skill vs ON s.id = vs.skill_id 
+        WHERE vs.volunteer_id = ?
         ORDER BY s.type DESC, s.name ASC";
 
 // Prepare the SQL statement
