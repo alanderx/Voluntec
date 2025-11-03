@@ -10,7 +10,7 @@ if (!isset($_POST['email']) || !isset($_POST['senha'])) {
 $email = $_POST['email'];
 $senha = $_POST['senha'];
 
-$stmt = $conn->prepare("SELECT id, name, email, password_hash FROM user WHERE email = ?");
+$stmt = $conn->prepare("SELECT id, name, email, password_hash FROM volunteer WHERE email = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $resultado = $stmt->get_result();

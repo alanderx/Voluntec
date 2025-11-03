@@ -14,7 +14,7 @@ $pais = $_POST['country'];
 
 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
-$stmt = $conn->prepare("INSERT INTO user (name, email, password_hash, birth_date, city, state, country, is_moderator) VALUES (?, ?, ?, ?, ?, ?, ?, 0)");
+$stmt = $conn->prepare("INSERT INTO volunteer (name, email, password_hash, birth_date, city, state, country, is_moderator) VALUES (?, ?, ?, ?, ?, ?, ?, 0)");
 $stmt->bind_param("sssssss", $nome, $email, $senha_hash, $data_nasc, $cidade, $uf, $pais);
 
 $resposta = [];

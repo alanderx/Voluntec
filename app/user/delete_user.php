@@ -29,7 +29,7 @@ if (!$stmt_projetos->execute()) {
 $stmt_projetos->close();
 
 // Now delete the user
-$sql_usuario = "DELETE FROM user WHERE id = ?";
+$sql_usuario = "DELETE FROM volunteer WHERE id = ?";
 $stmt_usuario = $conn->prepare($sql_usuario);
 $stmt_usuario->bind_param("i", $id);
 if ($stmt_usuario->execute()) {

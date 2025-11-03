@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $id = $_SESSION['user_id'];
-$sql = "SELECT name, email, city, state, country FROM user WHERE id = ?";
+$sql = "SELECT name, email, city, state, country FROM volunteer WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();

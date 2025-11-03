@@ -19,7 +19,7 @@ $cidade = $_POST['city'];
 $uf = $_POST['state'];
 $pais = $_POST['country'];
 
-$sql = "UPDATE user SET name = ?, email = ?, city = ?, state = ?, country = ? WHERE id = ?";
+$sql = "UPDATE volunteer SET name = ?, email = ?, city = ?, state = ?, country = ? WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("sssssi", $nome, $email, $cidade, $uf, $pais, $id);
 

@@ -10,7 +10,7 @@ if (!$id_projeto) {
     exit;
 }
 
-$sql = "SELECT p.id, p.name, p.description, p.created_at, u.name as full_name, p.created_by FROM project p LEFT JOIN user u ON p.created_by = u.id WHERE p.id = ?";
+$sql = "SELECT p.id, p.name, p.description, p.created_at, u.name as full_name, p.created_by FROM project p LEFT JOIN volunteer u ON p.created_by = u.id WHERE p.id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id_projeto);
 $stmt->execute();

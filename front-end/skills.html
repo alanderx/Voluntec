@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Habilidades - Voluntec</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f8f9fa;
+      padding: 2rem 0;
+    }
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+    .skill-btn {
+      margin: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border: 2px solid #dee2e6;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .skill-btn:hover {
+      background: #f8f9fa;
+    }
+    .skill-btn.selected {
+      background: #0d6efd;
+      color: white;
+      border-color: #0d6efd;
+    }
+    .skills-section {
+      margin-bottom: 2rem;
+    }
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-container">
+      <h2 class="mb-4 text-center">Selecione suas Habilidades</h2>
+      
+      <div id="alertMessage"></div>
+      
+      <div id="loadingSkills" class="loading">
+        Carregando habilidades...
+      </div>
+      
+      <div id="skillsContainer" style="display: none;">
+        <div id="hardSkillsSection" class="skills-section">
+          <h5 class="mb-3">Hard Skills</h5>
+          <div id="hardSkills"></div>
+        </div>
+        
+        <div id="softSkillsSection" class="skills-section">
+          <h5 class="mb-3">Soft Skills</h5>
+          <div id="softSkills"></div>
+        </div>
+        
+        <button id="finalizeBtn" class="btn btn-success w-100 mt-4">Finalizar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedSkillIds = [];
+    const selectedInterests = JSON.parse(sessionStorage.getItem('selected_interests') || '[]');
+    
+    // Load skills based on selected interests
+    async function loadSkills() {
+      if (selectedInterests.length === 0) {
+        document.getElementById('loadingSkills').innerHTML = 
+          '<div class="alert alert-warning">Nenhuma área de interesse selecionada. <a href="areas_of_interest.html">Voltar</a></div>';
+        return;
+      }
+      
+      try {
+        const areasParam = selectedInterests.join(',');
+        const response = await fetch(`/Voluntec/app/skill/get_skills_by_interest.php?areas=${areasParam}`);
+        const data = await response.json();
+        
+        if (data.codigo && data.skills && data.skills.length > 0) {
+          displaySkills(data.skills);
+          document.getElementById('loadingSkills').style.display = 'none';
+          document.getElementById('skillsContainer').style.display = 'block';
+        } else {
+          document.getElementById('loadingSkills').innerHTML = 
+            '<div class="alert alert-info">Nenhuma habilidade encontrada para as áreas selecionadas.</div>';
+        }
+      } catch (error) {
+        document.getElementById('loadingSkills').innerHTML = 
+          '<div class="alert alert-danger">Erro ao carregar habilidades: ' + error.message + '</div>';
+      }
+    }
+    
+    function displaySkills(skills) {
+      const hardSkills = skills.filter(s => s.type === 'hard');
+      const softSkills = skills.filter(s => s.type === 'soft');
+      
+      const hardContainer = document.getElementById('hardSkills');
+      const softContainer = document.getElementById('softSkills');
+      
+      if (hardSkills.length > 0) {
+        hardContainer.innerHTML = hardSkills.map(skill => 
+          `<button type="button" class="skill-btn" data-skill-id="${skill.id}">${skill.name}</button>`
+        ).join('');
+      } else {
+        document.getElementById('hardSkillsSection').style.display = 'none';
+      }
+      
+      if (softSkills.length > 0) {
+        softContainer.innerHTML = softSkills.map(skill => 
+          `<button type="button" class="skill-btn" data-skill-id="${skill.id}">${skill.name}</button>`
+        ).join('');
+      } else {
+        document.getElementById('softSkillsSection').style.display = 'none';
+      }
+      
+      // Add click handlers
+      document.querySelectorAll('.skill-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const skillId = parseInt(this.getAttribute('data-skill-id'));
+          if (this.classList.contains('selected')) {
+            this.classList.remove('selected');
+            selectedSkillIds = selectedSkillIds.filter(id => id !== skillId);
+          } else {
+            this.classList.add('selected');
+            selectedSkillIds.push(skillId);
+          }
+        });
+      });
+    }
+    
+    document.getElementById('finalizeBtn').addEventListener('click', async function() {
+      if (selectedSkillIds.length === 0) {
+        document.getElementById('alertMessage').innerHTML = 
+          '<div class="alert alert-warning">Selecione pelo menos uma habilidade</div>';
+        return;
+      }
+      
+      // First, login the user with temp credentials
+      const email = sessionStorage.getItem('temp_user_email');
+      const password = sessionStorage.getItem('temp_user_password');
+      
+      if (!email || !password) {
+        alert('Erro: dados de usuário não encontrados. Por favor, faça o cadastro novamente.');
+        window.location.href = 'create_user.html';
+        return;
+      }
+      
+      try {
+        // Login first
+        const loginFormData = new FormData();
+        loginFormData.append('email', email);
+        loginFormData.append('senha', password);
+        
+        const loginResponse = await fetch('/Voluntec/app/login.php', {
+          method: 'POST',
+          body: loginFormData
+        });
+        
+        const loginData = await loginResponse.json();
+        
+        if (!loginData.codigo) {
+          alert('Erro ao fazer login: ' + loginData.msg);
+          return;
+        }
+        
+        // Now add skills
+        const formData = new FormData();
+        formData.append('skills', JSON.stringify(selectedSkillIds));
+        
+        const skillsResponse = await fetch('/Voluntec/app/skill/add_user_skills.php', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const skillsData = await skillsResponse.json();
+        
+        if (skillsData.codigo) {
+          // Clear temp data
+          sessionStorage.removeItem('temp_user_id');
+          sessionStorage.removeItem('temp_user_email');
+          sessionStorage.removeItem('temp_user_password');
+          sessionStorage.removeItem('selected_interests');
+          
+          alert('Cadastro completo! Redirecionando...');
+          window.location.href = 'projects_dashboard.html';
+        } else {
+          document.getElementById('alertMessage').innerHTML = 
+            '<div class="alert alert-danger">' + skillsData.msg + '</div>';
+        }
+      } catch (error) {
+        alert('Erro ao finalizar cadastro: ' + error.message);
+      }
+    });
+    
+    // Load skills on page load
+    loadSkills();
+  </script>
+</body>
+</html>
+

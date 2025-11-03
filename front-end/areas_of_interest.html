@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Áreas de Interesse - Voluntec</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f8f9fa;
+      padding: 2rem 0;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+    .interest-option {
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border: 2px solid #dee2e6;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .interest-option:hover {
+      background: #f8f9fa;
+    }
+    .interest-option input[type="checkbox"] {
+      margin-right: 0.5rem;
+    }
+    .interest-option.selected {
+      border-color: #0d6efd;
+      background: #e7f1ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-container">
+      <h2 class="mb-4 text-center">Selecione suas Áreas de Interesse</h2>
+      <p class="text-muted text-center mb-4">Selecione uma ou mais áreas que você tem interesse</p>
+      
+      <div id="alertMessage"></div>
+      
+      <form id="interestForm">
+        <div class="interest-option" onclick="toggleInterest(this)">
+          <input type="checkbox" name="interest" value="design" id="design" onchange="updateSelection(this)">
+          <label for="design" style="cursor: pointer; font-weight: bold;">Design</label>
+          <p class="mb-0 text-muted small">UI/UX, Gráficos, Visual</p>
+        </div>
+        
+        <div class="interest-option" onclick="toggleInterest(this)">
+          <input type="checkbox" name="interest" value="development" id="development" onchange="updateSelection(this)">
+          <label for="development" style="cursor: pointer; font-weight: bold;">Development</label>
+          <p class="mb-0 text-muted small">Programação, Web, Apps</p>
+        </div>
+        
+        <div class="interest-option" onclick="toggleInterest(this)">
+          <input type="checkbox" name="interest" value="data" id="data" onchange="updateSelection(this)">
+          <label for="data" style="cursor: pointer; font-weight: bold;">Data Intelligence</label>
+          <p class="mb-0 text-muted small">Analytics, AI, Data Science</p>
+        </div>
+        
+        <div class="interest-option" onclick="toggleInterest(this)">
+          <input type="checkbox" name="interest" value="business" id="business" onchange="updateSelection(this)">
+          <label for="business" style="cursor: pointer; font-weight: bold;">Business Management</label>
+          <p class="mb-0 text-muted small">Estratégia, Gestão, Planejamento</p>
+        </div>
+        
+        <button type="submit" class="btn btn-primary w-100 mt-4">Continuar</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function toggleInterest(element) {
+      const checkbox = element.querySelector('input[type="checkbox"]');
+      checkbox.checked = !checkbox.checked;
+      updateSelection(checkbox);
+    }
+    
+    function updateSelection(checkbox) {
+      const option = checkbox.closest('.interest-option');
+      if (checkbox.checked) {
+        option.classList.add('selected');
+      } else {
+        option.classList.remove('selected');
+      }
+    }
+    
+    document.getElementById('interestForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const selected = Array.from(document.querySelectorAll('input[name="interest"]:checked'))
+        .map(cb => cb.value);
+      
+      if (selected.length === 0) {
+        document.getElementById('alertMessage').innerHTML = 
+          '<div class="alert alert-warning">Selecione pelo menos uma área de interesse</div>';
+        return;
+      }
+      
+      // Store selected areas
+      sessionStorage.setItem('selected_interests', JSON.stringify(selected));
+      
+      // Redirect to skills page
+      window.location.href = 'skills.html';
+    });
+  </script>
+</body>
+</html>
+

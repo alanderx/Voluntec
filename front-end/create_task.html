@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Criar Tarefa - Voluntec</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f8f9fa;
+      padding: 2rem 0;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-container">
+      <h2 class="mb-4 text-center">Criar Tarefa</h2>
+      
+      <div id="alertMessage"></div>
+      
+      <div id="loading" class="text-center py-3">
+        <p class="text-muted">Carregando...</p>
+      </div>
+      
+      <form id="createTaskForm" style="display: none;">
+        <div class="mb-3">
+          <label for="project_id" class="form-label">Projeto</label>
+          <select class="form-select" id="project_id" name="project_id" required>
+            <option value="">Carregando projetos...</option>
+          </select>
+        </div>
+        
+        <div class="mb-3">
+          <label for="task_id" class="form-label">Tipo de Tarefa</label>
+          <select class="form-select" id="task_id" name="task_id" required>
+            <option value="">Carregando tipos...</option>
+          </select>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="start_date" class="form-label">Data de Início</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="end_date" class="form-label">Data de Término</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" required>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="status" class="form-label">Status</label>
+          <select class="form-select" id="status" name="status" required>
+            <option value="A Fazer" selected>A Fazer</option>
+            <option value="Em Progresso">Em Progresso</option>
+            <option value="Concluído">Concluído</option>
+          </select>
+        </div>
+        
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Criar Tarefa</button>
+          <a href="projects_dashboard.html" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let projects = [];
+    let taskTypes = [];
+    
+    async function loadProjects() {
+      try {
+        const response = await fetch('/Voluntec/app/project/list_projects.php');
+        projects = await response.json();
+        
+        const select = document.getElementById('project_id');
+        select.innerHTML = '<option value="">Selecione um projeto...</option>';
+        
+        if (projects && projects.length > 0) {
+          projects.forEach(project => {
+            const option = document.createElement('option');
+            option.value = project.id;
+            option.textContent = project.name || `Projeto #${project.id}`;
+            select.appendChild(option);
+          });
+        } else {
+          select.innerHTML = '<option value="">Nenhum projeto disponível</option>';
+        }
+      } catch (error) {
+        document.getElementById('alertMessage').innerHTML = 
+          '<div class="alert alert-danger">Erro ao carregar projetos: ' + error.message + '</div>';
+      }
+    }
+    
+    async function loadTaskTypes() {
+      try {
+        const response = await fetch('/Voluntec/app/task/list_task_types.php');
+        taskTypes = await response.json();
+        
+        const select = document.getElementById('task_id');
+        select.innerHTML = '<option value="">Selecione um tipo...</option>';
+        
+        if (taskTypes && taskTypes.length > 0) {
+          taskTypes.forEach(task => {
+            const option = document.createElement('option');
+            option.value = task.id;
+            option.textContent = task.title || `Tarefa #${task.id}`;
+            select.appendChild(option);
+          });
+        } else {
+          select.innerHTML = '<option value="">Nenhum tipo disponível</option>';
+        }
+      } catch (error) {
+        document.getElementById('alertMessage').innerHTML = 
+          '<div class="alert alert-danger">Erro ao carregar tipos de tarefa: ' + error.message + '</div>';
+      }
+    }
+    
+    async function loadData() {
+      await Promise.all([loadProjects(), loadTaskTypes()]);
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('createTaskForm').style.display = 'block';
+    }
+    
+    document.getElementById('createTaskForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData();
+      formData.append('project_id', document.getElementById('project_id').value);
+      formData.append('task_id', document.getElementById('task_id').value);
+      formData.append('start_date', document.getElementById('start_date').value);
+      formData.append('end_date', document.getElementById('end_date').value);
+      formData.append('status', document.getElementById('status').value);
+      
+      try {
+        const response = await fetch('/Voluntec/app/user_task/create_task.php', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.codigo) {
+          alert('Tarefa criada com sucesso!');
+          window.location.href = 'projects_dashboard.html';
+        } else {
+          document.getElementById('alertMessage').innerHTML = 
+            '<div class="alert alert-danger">' + data.msg + '</div>';
+        }
+      } catch (error) {
+        alert('Erro ao criar tarefa: ' + error.message);
+      }
+    });
+    
+    // Load data on page load
+    loadData();
+  </script>
+</body>
+</html>
+
